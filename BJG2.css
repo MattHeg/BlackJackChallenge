@@ -1,0 +1,55 @@
+button {
+    background-color: #4CAF50; 
+    border-radius: 12px;
+    color: #FCC676;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    /*text-shadow: 2px 2px #000000;*/
+    border: 1px solid #FFFFFF;
+    padding: 14px 24px;
+}
+
+p { 
+    color: #FCD771;
+    font-size: 20px;
+    text-orientation: right;
+    font-family: Helvetica;
+
+}
+
+body {
+    background-image: url("MGM_Grand.jpg");
+    background-size: 100%;
+    bottom-margin: 0%;
+
+}
+
+img{
+
+}
+
+.color:hover
+{
+        background:#53a7ea;
+}
+
+.grow:hover
+{
+        -webkit-transform: scale(1.05);
+        -ms-transform: scale(1.05);
+        transform: scale(1.05);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+@media only screen and (max-width: 500px) {
+    body {
+        background-color: lightblue;
+    }
+}
+

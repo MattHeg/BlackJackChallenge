@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Blackjack Challenge</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!--logo on tab-->
+	<link rel="shortcut icon" type="image/x-icon" href="https://images-na.ssl-images-amazon.com/images/I/81w49Xr-7QL.png"/>
+	<!-- External CSS file !-->
+	<link rel="stylesheet" type= "text/css" href="BJG2.css"> 
+
+</head>
+<body>
+
+	<div align="left" style="margin-left: 460px;">
+		<p id="dealerHand">Dealer: </p>
+		<p id="dealerScore">Dealer's Score: </p>
+		<p id="dealerResult"></p>
+	</div>
+	
+	
+	<div align="center">
+		<button id="start" class="color grow" onclick="start()">Start</button>
+		<button id="hit" class="color grow" onclick="Hit()">Hit</button>
+		<button id="stand" class="color grow" onclick="Stand()">Stand</button>
+		<button id="raise" class="color grow" onclick="Raise()">Raise</button>
+		<input type="number" placeholder="Raise Your Bet!" id="yourBet">
+		Your bet: <input id="betPot" type="text" name="fbet" value="5" disabled><br>
+	</div>
+	
+	
+	<div align="left" style="margin-left: 460px;">
+		<p id="yourHand">You: </p>
+		<p id="yourScore">Your Score: </p>
+		<p id="yourCredit">Your Credit: $200 </p>
+		<p id="playerResult"></p>
+	</div>
+
+	<script type="text/javascript">
+		// Deck to be evaluated
+		var deck = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+		// Empty array for players hand
+		var yourHand = [];
+		// Empty array for dealer's hand
+		var yourMoney = 200;
+		var dealerHand = [];
+		
+		// Start button function
+		function start(){
+		    Enable();
+			document.getElementById("playerResult").innerHTML = "";
+			document.getElementById("dealerResult").innerHTML = "";
+			//Global and empty arrays to serve as placeholders for cards being pushed 
+			yourHand = [];
+			dealerHand = [];
+			// Local and empty array for "random" to be used in conjunction with for loop
+			var ran = [];
+			// For loop
+			for (var i = 0; i <= 4; i++){
+				ran.push(parseInt(Math.random()* deck.length))
+			}
+			// 2 cards pushed into "yourHand" from "deck" with indexes [0] and [1] from the for loop
+			yourHand.push(deck[ran[0]])
+			yourHand.push(deck[ran[1]])
+			//2 cards pushed into "yourHand" from "deck" with indexes [2] and [3] from the for loop
+			dealerHand.push(deck[ran[2]])
+			dealerHand.push(deck[ran[3]])
+			document.getElementById("dealerHand").innerHTML = dealerHand.join(", ")
+			document.getElementById("yourHand").innerHTML = yourHand.join(", ")
+			// 2 local results variables to evaluate (see Evaluate function) the random cards pushed to each hand
+			var playerResult = Evaluate(yourHand) 
+			var dealerResult = Evaluate(dealerHand) 
+			document.getElementById("dealerScore").innerHTML = "Dealer Score: " + dealerResult;
+			document.getElementById("yourScore").innerHTML = "Your Score: " + playerResult;
+				// Conditional statement to print game results
+				if (playerResult == 21){
+					document.getElementById("playerResult").innerHTML = ("BLACKJACK!!!")
+				} else if (dealerResult == 21 && playerResult !== 21){
+					document.getElementById("playerResult").innerHTML = ("You Lose!!")
+				} else if (dealerResult == 21 && playerResult == 21){
+					document.getElementById("playerResult").innerHTML = ("Tie")
+				} else {
+
+				}
+		}
+
+		function Hit(){
+		    var betPot = parseInt(document.getElementById('betPot').value);
+			var ran = parseInt(Math.random() * deck.length);
+			yourHand.push(deck[ran])
+			document.getElementById("yourHand").innerHTML = yourHand.join(", ")
+			var playerResult = Evaluate(yourHand) 
+			var dealerResult = Evaluate(dealerHand)
+			document.getElementById("dealerScore").innerHTML = "Dealer Score: " + dealerResult;
+			document.getElementById("yourScore").innerHTML = "Your Score: " + playerResult;
+
+			var playerResult = Evaluate(yourHand);
+				if (playerResult > 21){
+					document.getElementById("playerResult").innerHTML = ("You Busted!");
+					yourMoney -= 5;
+					
+					document.getElementById('betPot').value = 5;
+					document.getElementById('yourBet').value = 0;
+					document.getElementById('yourCredit').innerHTML = "Your Credit: $" + yourMoney;
+					
+					Disable();
+					
+				} else if (playerResult == 21){
+					document.getElementById("playerResult").innerHTML = ("BLACKJACK!");
+					
+					yourMoney += 2 * betPot;
+					yourMoney -= 5;
+					
+					document.getElementById('betPot').value = 5;
+					document.getElementById('yourBet').value = 0;
+					document.getElementById('yourCredit').innerHTML = "Your Credit: $" + yourMoney;
+					
+					Disable();
+				} else {
+
+				}
+
+		}
+		
+		function Evaluate(array){
+			var total1 = 0;
+			var total2 = 0;
+			for(var i = 0; i < array.length; i++){
+				if (array[i] == "A"){
+					total1 += 11;
+					total2 += 1;
+				} else if (array[i] >= 2 && array[i] <= 10){
+					total1 += parseInt(array[i]);
+					total2 += parseInt(array[i]);
+				} else {
+					total1 += 10;
+					total2 += 10;
+				}
+			}
+			
+			if (total1 <= 21 && total2 <= 21){
+				return Math.max(total1, total2);
+			} else {
+				return Math.min(total1, total2);
+			}
+		}
+		
+		function Stand(){
+		    Disable();
+		    var betPot = parseInt(document.getElementById('betPot').value);
+		    var dealerResult = Evaluate(dealerHand);
+			while (dealerResult <= 17){
+				var ran = parseInt(Math.random() * deck.length);
+			    dealerHand.push(deck[ran]);
+			    dealerResult = Evaluate(dealerHand);
+			}
+			document.getElementById("dealerHand").innerHTML = dealerHand.join(", ")
+			document.getElementById("dealerScore").innerHTML = "Dealer Score: " + dealerResult;
+			if (dealerResult > 21){
+			    document.getElementById("dealerResult").innerHTML = ("Dealer Busted!");
+			    
+			    yourMoney += 2 * betPot;
+				yourMoney -= 5;
+				
+			} else if (dealerResult == 21){
+				document.getElementById("dealerResult").innerHTML = ("BLACKJACK!");
+				// yourMoney += betPot;
+				yourMoney -= 5;
+			} else {
+			    var playerResult = Evaluate(yourHand);
+			    if (playerResult > dealerResult){
+			        document.getElementById("playerResult").innerHTML = ("Player Wins!");
+			        yourMoney += 2 * betPot;
+					yourMoney -= 5;
+			    } else {
+			        document.getElementById("dealerResult").innerHTML = ("Dealer Wins!");
+			        yourMoney -= 5;
+			    }
+			}
+			document.getElementById('betPot').value = 5;
+			document.getElementById('yourBet').value = 0;
+			document.getElementById('yourCredit').innerHTML = "Your Credit: $" + yourMoney;
+		}
+
+		function Raise(){
+			var bet = parseInt(document.getElementById('yourBet').value);
+			var betPot = parseInt(document.getElementById('betPot').value);
+			
+			yourMoney -= bet;
+			betPot += bet;
+			
+			document.getElementById('betPot').value = betPot;
+			document.getElementById('yourCredit').innerHTML = "Your Credit: $" + yourMoney;
+			
+		}
+		
+		function Enable(){
+		    // Enable Hit, Stand and Raise buttons
+		    document.getElementById("hit").disabled = false;
+	        document.getElementById("raise").disabled = false;
+	        document.getElementById("stand").disabled = false;
+		}
+	
+	
+	    function Disable(){
+	        // Disable Hit, Stand and Raise buttons
+	        document.getElementById("hit").disabled = true;
+	        document.getElementById("raise").disabled = true;
+	        document.getElementById("stand").disabled = true;
+	    }
+	    
+	</script>
+
+</body>
+</html>
